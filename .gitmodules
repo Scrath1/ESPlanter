@@ -1,0 +1,3 @@
+[submodule "lib/Config-Table"]
+	path = lib/Config-Table
+	url = https://github.com/Scrath1/Config-Table.git
