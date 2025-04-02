@@ -1,16 +1,19 @@
 #include <Arduino.h>
-
-// put function declarations here:
-int myFunction(int, int);
+#include "drivers/pump.h"
+#include "global.h"
 
 void setup() {
+    delay(1000);
+    Serial.begin(115200);
+    Serial.println("ESPlanter");
     // put your setup code here, to run once:
-    int result = myFunction(2, 3);
+    init_pump();
+    Serial.println("Setup complete");
 }
 
 void loop() {
     // put your main code here, to run repeatedly:
+    if(Serial.read() == 'p'){
+        run_pump(3000);
+    }
 }
-
-// put function definitions here:
-int myFunction(int x, int y) { return x + y; }
