@@ -21,4 +21,6 @@
 #define MAX_MQTT_PASSWORD_LEN (64)
 #define MAX_MQTT_DEVICE_TOPIC_LEN (64)
 
+#define CONFIG_FILE_NAME "/config.txt"
+
 #endif // STATIC_CONFIG_H
