@@ -1,3 +1,6 @@
 [submodule "lib/Config-Table"]
 	path = lib/Config-Table
 	url = https://github.com/Scrath1/Config-Table.git
+[submodule "lib/STInt"]
+	path = lib/STInt
+	url = https://github.com/Scrath1/STInt.git

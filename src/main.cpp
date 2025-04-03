@@ -3,6 +3,7 @@
 #include "drivers/pump.h"
 #include "global.h"
 #include "static_config.h"
+#include "serial_commands.h"
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
@@ -146,38 +147,40 @@ void setup() {
     }
     
 
-    Serial.println("Setup complete");
+    Serial.println("Setup complete.\nType 'help' for a list of possible commands");
 }
 
 void loop() {
-    static uint32_t rx_buffer_next_idx = 0;
-    static char rx_buffer[256] = "";
-
     // put your main code here, to run repeatedly:
+    bool skip_next_newline = false;
     while(Serial.available() > 0){
         char c = Serial.read();
-        Serial.print(c);
-        if(c == '\n' || c == '\r'){
-            if(CFG_RC_SUCCESS != config_parseKVStr(&config, rx_buffer, rx_buffer_next_idx)){
-                Serial.println("Failed to parse key-value pair for settings");
-            }
-            else{
-                Serial.println("Updated config value");
-                if(CFG_RC_SUCCESS != config_saveToFile(&config, CONFIG_FILE_NAME)){
-                    Serial.println("Failed to save updated config to filesystem");
-                }
-            }
-            // reset buffer
-            memset(rx_buffer, '\0', rx_buffer_next_idx);
-            rx_buffer_next_idx = 0;
+        // stupid handling of \r\n newlines
+        // since some systems send just \r or just \n
+        // for a newline and both individually trigger the command parser
+        if(c == '\r'){
+            Serial.println();
+            skip_next_newline = true;
         }
-        else{
-            if(rx_buffer_next_idx < sizeof(rx_buffer)){
-                rx_buffer[rx_buffer_next_idx++] = c;
-            }
-            else{
-                Serial.println("Error: Input buffer full");
-            }
+        else if(c == '\n' && !skip_next_newline){
+            Serial.println();
+        }
+        else if(c == '\n' && skip_next_newline){
+            skip_next_newline = false;
+        }
+        else Serial.print(c);
+
+        Stint::ErrorCode ret = stint.ingest(c);
+        switch(ret){
+            default:
+                break;
+            case Stint::BUFFER_FULL:
+                Serial.println("Input buffer full without valid command. Clearing buffer!");
+                stint.clearBuffer();
+                break;
+            case Stint::NO_MATCH:
+                Serial.println("No matching command found");
+                break;
         }
     }
 }
