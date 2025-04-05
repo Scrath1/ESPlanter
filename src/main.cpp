@@ -126,7 +126,7 @@ void setup() {
     }
     config_setSaveLoadFunctions(config_littleFSSaveToFile, config_littleFSloadFromFile);
     if(!LittleFS.exists(CONFIG_FILE_NAME)){
-        if(CFG_RC_SUCCESS != config_saveToFile(&config, CONFIG_FILE_NAME)){
+        if(CFG_RC_SUCCESS != config_saveToFile(&config_table, CONFIG_FILE_NAME)){
             Serial.println("Failed to create default config file");
             while(1);
         }
@@ -136,13 +136,13 @@ void setup() {
         
     }
     else{
-        if(CFG_RC_SUCCESS != config_loadFromFile(&config, CONFIG_FILE_NAME)){
+        if(CFG_RC_SUCCESS != config_loadFromFile(&config_table, CONFIG_FILE_NAME)){
             Serial.println("Failed to load config from file");
             while(1);
         }
         else{
             Serial.println("Loaded config from file");
-            print_config(config);
+            print_config(config_table);
         }
     }
     

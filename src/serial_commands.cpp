@@ -20,8 +20,8 @@ void cmd_help(const char* cmd, uint32_t cmd_len) {
 void cmd_list(const char* cmd, uint32_t cmd_len) {
     (void) cmd;
     (void) cmd_len;
-    for(uint32_t i = 0; i < config.count; i++){
-        const ConfigEntry_t& e = config.entries[i];
+    for(uint32_t i = 0; i < config_table.count; i++){
+        const ConfigEntry_t& e = config_table.entries[i];
         Serial.println(e.key);
     }
 }
@@ -29,7 +29,7 @@ void cmd_list(const char* cmd, uint32_t cmd_len) {
 void cmd_set(const char* cmd, uint32_t cmd_len) {
     char buf[256] = "";
     strncpy(buf, cmd, cmd_len);
-    switch(config_parseKVStr(&config, buf, cmd_len)){
+    switch(config_parseKVStr(&config_table, buf, cmd_len)){
         default:
             Serial.println("Unknown error");
             break;
@@ -51,7 +51,7 @@ void cmd_get(const char* cmd, uint32_t cmd_len) {
     // This line causes crash
     // *entry = (config.entries[idx]);
 
-    if(CFG_RC_SUCCESS != config_getByKey(&config, cmd, &entry)){
+    if(CFG_RC_SUCCESS != config_getByKey(&config_table, cmd, &entry)){
         Serial.println("Couldn't find matching config entry");
         return;
     }
