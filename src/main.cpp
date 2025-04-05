@@ -85,7 +85,6 @@ CfgRet_t config_littleFSloadFromFile(ConfigTable_t* cfg, const char* filename){
 }
 
 void setup() {
-    delay(1000);
     Serial.begin(115200);
     Serial.println("ESPlanter");
     // put your setup code here, to run once:
@@ -129,7 +128,7 @@ void setup() {
         Serial.println("No SSID configured. Skipping WiFi setup");
     }
     
-    Serial.println("Setup complete.\nType 'help' for a list of possible commands.");
+    Serial.println("Setup complete.\n\nType 'help' for a list of possible commands.");
     Serial.println("Press enter to confirm a command");
 }
 

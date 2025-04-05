@@ -66,6 +66,7 @@ void cmd_set(const char* cmd, uint32_t cmd_len) {
             break;
         case CFG_RC_SUCCESS:
             Serial.println("Updated value");
+            config_saveToFile(&config_table, CONFIG_FILE_NAME);
             break;
         case CFG_RC_ERROR:
             Serial.println("Could not parse value");
@@ -78,9 +79,6 @@ void cmd_set(const char* cmd, uint32_t cmd_len) {
 
 void cmd_get(const char* cmd, uint32_t cmd_len) {
     ConfigEntry_t entry;
-
-    // This line causes crash
-    // *entry = (config.entries[idx]);
 
     if(CFG_RC_SUCCESS != config_getByKey(&config_table, cmd, &entry)){
         Serial.println("Couldn't find matching config entry");
