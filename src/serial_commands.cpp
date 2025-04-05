@@ -81,11 +81,18 @@ void cmd_get(const char* cmd, uint32_t cmd_len) {
     }
 }
 
+void cmd_reset(const char* cmd, uint32_t cmd_len){
+    (void) cmd;
+    (void) cmd_len;
+    ESP.restart();
+}
+
 Stint::Command commands[] = {
     {.name = "help", .function = cmd_help, .helptext = "Lists all commands and their helptext"},
     {.name = "list", .function = cmd_list, .helptext = "Lists all config variable names"},
-    {.name = "set", .function = cmd_set, .helptext = "Sets a variable in the config by name, e.g. \"set wifi_ssid: ExampleSSID\""},
+    {.name = "set", .function = cmd_set, .helptext = "Sets a variable in the config by name, e.g. \"set config.wifi.ssid: ExampleSSID\""},
     {.name = "get", .function = cmd_get, .helptext = "Prints the value of a config variable"},
+    {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"}
 };
 
 Stint stint{commands, sizeof(commands) / sizeof(commands[0]), input_buffer, SERIAL_CMD_INPUT_BUFFER_SIZE};

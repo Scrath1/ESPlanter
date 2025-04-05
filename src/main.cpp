@@ -119,6 +119,7 @@ void setup() {
     Serial.begin(115200);
     Serial.println("ESPlanter");
     // put your setup code here, to run once:
+    stint.setAutoBackspace(true);
     init_pump();
     if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
         Serial.println("Failed to initialize filesystem");
@@ -146,8 +147,8 @@ void setup() {
         }
     }
     
-
-    Serial.println("Setup complete.\nType 'help' for a list of possible commands");
+    Serial.println("Setup complete.\nType 'help' for a list of possible commands.");
+    Serial.println("Press enter to confirm a command");
 }
 
 void loop() {
@@ -167,6 +168,12 @@ void loop() {
         }
         else if(c == '\n' && skip_next_newline){
             skip_next_newline = false;
+        }
+        else if(c == '\b'){
+            // backspace implementation
+            Serial.print("\b \b"); // erases last char from terminal
+            // Erasing the last char from the stint buffer is handled automatically
+            // by the ingest function
         }
         else Serial.print(c);
 
