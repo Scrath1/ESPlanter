@@ -110,7 +110,6 @@ void setup() {
         switch(ret){
             case CFG_RC_SUCCESS:
                 Serial.println("Loaded config from file");
-                print_config(config_table);
                 break;
             case CFG_RC_ERROR_INCOMPLETE:
                 Serial.println("Config contains unknown keys or a key-value pair could not be parsed");
@@ -120,6 +119,15 @@ void setup() {
                 while(1);
         }
     }
+    // set default config values for config options which can not be
+    // set at compile-time if no value was found in config file
+    if(strlen(config.mqtt.client_id) == 0)
+        snprintf(config.mqtt.client_id, sizeof(config.mqtt.client_id), "ESPlanter-%llX", ESP.getEfuseMac());
+    if(strlen(config.mqtt.device_topic) == 0)
+        snprintf(config.mqtt.device_topic, sizeof(config.mqtt.device_topic), "%llX", ESP.getEfuseMac());
+    if(strlen(config.wifi.hostname) == 0)
+        snprintf(config.wifi.hostname, sizeof(config.wifi.hostname), "ESPlanter-%llX", ESP.getEfuseMac());
+
     if(strlen(config.wifi.ssid) > 0){
         Serial.println("Setting up WiFi");
         wifiSetup();
