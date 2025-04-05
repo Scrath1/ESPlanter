@@ -25,4 +25,6 @@
 
 #define CONFIG_FILE_NAME "/config.txt"
 
+#define WIFI_CONNECTION_TIMEOUT_MS 5000
+
 #endif // STATIC_CONFIG_H

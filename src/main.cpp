@@ -4,6 +4,7 @@
 #include "global.h"
 #include "static_config.h"
 #include "serial_commands.h"
+#include "wifi_helpers.h"
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
@@ -122,7 +123,7 @@ void setup() {
     }
     if(strlen(config.wifi.ssid) > 0){
         Serial.println("Setting up WiFi");
-        // wifiSetup();
+        wifiSetup();
     }
     else{
         Serial.println("No SSID configured. Skipping WiFi setup");

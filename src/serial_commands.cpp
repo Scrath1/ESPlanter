@@ -2,6 +2,7 @@
 #include "static_config.h"
 #include <Arduino.h>
 #include "global.h"
+#include "wifi_helpers.h"
 
 char input_buffer[SERIAL_CMD_INPUT_BUFFER_SIZE];
 
@@ -117,12 +118,19 @@ void cmd_reset(const char* cmd, uint32_t cmd_len){
     ESP.restart();
 }
 
+void cmd_wifiSetup(const char* cmd, uint32_t cmd_len){
+    (void) cmd;
+    (void) cmd_len;
+    wifiSetup();
+}
+
 Stint::Command commands[] = {
     {.name = "help", .function = cmd_help, .helptext = "Lists all commands and their helptext"},
     {.name = "list", .function = cmd_list, .helptext = "Lists all config variable names"},
     {.name = "set", .function = cmd_set, .helptext = "Sets a variable in the config by name, e.g. \"set config.wifi.ssid: ExampleSSID\""},
     {.name = "get", .function = cmd_get, .helptext = "Prints the value of a config variable"},
-    {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"}
+    {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"},
+    {.name = "wifi_setup", .function = cmd_wifiSetup, .helptext = "Re-runs the WiFi setup process"}
 };
 
 Stint stint{commands, sizeof(commands) / sizeof(commands[0]), input_buffer, SERIAL_CMD_INPUT_BUFFER_SIZE};
