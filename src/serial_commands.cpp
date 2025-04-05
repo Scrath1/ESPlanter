@@ -5,6 +5,38 @@
 
 char input_buffer[SERIAL_CMD_INPUT_BUFFER_SIZE];
 
+void print_config(const ConfigTable_t& cfg_table) {
+    Serial.println("Current config:");
+    for(size_t i = 0; i < cfg_table.count; i++) {
+        const auto& e = cfg_table.entries[i];
+        Serial.print(e.key);
+        Serial.print(": ");
+        if(e.perm == CFG_PERM_SECRET_RO || e.perm == CFG_PERM_SECRET_RW){
+            Serial.println("<redacted>");
+            continue;
+        }
+        switch(e.type) {
+            default:
+            case CONFIG_UINT32:
+                Serial.print(*static_cast<uint32_t*>(e.value));
+                break;
+            case CONFIG_INT32:
+                Serial.print(*static_cast<int32_t*>(e.value));
+                break;
+            case CONFIG_BOOL:
+                Serial.print(*static_cast<bool*>(e.value));
+                break;
+            case CONFIG_FLOAT:
+                Serial.print(*static_cast<float*>(e.value));
+                break;
+            case CONFIG_STRING:
+                Serial.print(static_cast<char*>(e.value));
+                break;
+        }
+        Serial.printf(", Max Bytes: %u\n", e.size);
+    }
+}
+
 void cmd_help(const char* cmd, uint32_t cmd_len) {
     (void) cmd;
     (void) cmd_len;
@@ -20,18 +52,16 @@ void cmd_help(const char* cmd, uint32_t cmd_len) {
 void cmd_list(const char* cmd, uint32_t cmd_len) {
     (void) cmd;
     (void) cmd_len;
-    for(uint32_t i = 0; i < config_table.count; i++){
-        const ConfigEntry_t& e = config_table.entries[i];
-        Serial.println(e.key);
-    }
+    print_config(config_table);
 }
 
 void cmd_set(const char* cmd, uint32_t cmd_len) {
     char buf[256] = "";
     strncpy(buf, cmd, cmd_len);
-    switch(config_parseKVStr(&config_table, buf, cmd_len)){
+    CfgRet_t ret = config_parseKVStr(&config_table, buf, cmd_len);
+    switch(ret){
         default:
-            Serial.println("Unknown error");
+            Serial.printf("Unknown error while parsing: Code=%i", ret);
             break;
         case CFG_RC_SUCCESS:
             Serial.println("Updated value");

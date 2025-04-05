@@ -83,37 +83,6 @@ CfgRet_t config_littleFSloadFromFile(ConfigTable_t* cfg, const char* filename){
     return CFG_RC_SUCCESS;
 }
 
-void print_config(const ConfigTable_t& cfg_table) {
-    Serial.println("Current config:");
-    for(size_t i = 0; i < cfg_table.count; i++) {
-        const auto& e = cfg_table.entries[i];
-        Serial.print(e.key);
-        Serial.print(": ");
-        if(e.perm == CFG_PERM_SECRET_RO || e.perm == CFG_PERM_SECRET_RW){
-            Serial.println("<redacted>");
-            continue;
-        }
-        switch(e.type) {
-            default:
-            case CONFIG_UINT32:
-                Serial.println(*static_cast<uint32_t*>(e.value));
-                break;
-            case CONFIG_INT32:
-                Serial.println(*static_cast<int32_t*>(e.value));
-                break;
-            case CONFIG_BOOL:
-                Serial.println(*static_cast<bool*>(e.value));
-                break;
-            case CONFIG_FLOAT:
-                Serial.println(*static_cast<float*>(e.value));
-                break;
-            case CONFIG_STRING:
-                Serial.println(static_cast<char*>(e.value));
-                break;
-        }
-    }
-}
-
 void setup() {
     delay(1000);
     Serial.begin(115200);
@@ -137,14 +106,26 @@ void setup() {
         
     }
     else{
-        if(CFG_RC_SUCCESS != config_loadFromFile(&config_table, CONFIG_FILE_NAME)){
-            Serial.println("Failed to load config from file");
-            while(1);
+        CfgRet_t ret = config_loadFromFile(&config_table, CONFIG_FILE_NAME);
+        switch(ret){
+            case CFG_RC_SUCCESS:
+                Serial.println("Loaded config from file");
+                print_config(config_table);
+                break;
+            case CFG_RC_ERROR_INCOMPLETE:
+                Serial.println("Config contains unknown keys or a key-value pair could not be parsed");
+                break;
+            default:
+                Serial.println("Failed to load config from file");
+                while(1);
         }
-        else{
-            Serial.println("Loaded config from file");
-            print_config(config_table);
-        }
+    }
+    if(strlen(config.wifi.ssid) > 0){
+        Serial.println("Setting up WiFi");
+        // wifiSetup();
+    }
+    else{
+        Serial.println("No SSID configured. Skipping WiFi setup");
     }
     
     Serial.println("Setup complete.\nType 'help' for a list of possible commands.");

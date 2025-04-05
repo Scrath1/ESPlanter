@@ -1,0 +1,1 @@
+# ESPlanter - An ESP32-based smart planter system for use with Homeassistant
