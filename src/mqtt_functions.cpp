@@ -18,7 +18,15 @@ void update_mqtt_subscriptions() {
     }
 }
 
-void mqttMaintainConnection() {
+void mqtt_on_reconnect() {
+    update_mqtt_subscriptions();
+    Serial.printf("Pump trigger topic is: %s\n", pump_trigger_topic);
+    if(!mqttClient.publish(pump_trigger_topic, "0")) {
+        Serial.println("Failed to send message to pump trigger topic");
+    }
+}
+
+void mqtt_maintain_connection() {
     static uint32_t next_connection_attempt_ticks = 0;
     if(!WiFi.isConnected()) return;
     // If the connection was lost, reconnect
@@ -32,11 +40,7 @@ void mqttMaintainConnection() {
         } else {
             // just connected to server
             Serial.println("Connected to MQTT server");
-            update_mqtt_subscriptions();
-            Serial.printf("Pump trigger topic is: %s\n", pump_trigger_topic);
-            if(!mqttClient.publish(pump_trigger_topic, "0")) {
-                Serial.println("Failed to send message to pump trigger topic");
-            }
+            mqtt_on_reconnect();
         }
     }
 }
@@ -59,7 +63,7 @@ void mqtt_subscription_callback(MQTTClient* client, const char topic[], char* pa
     }
 }
 
-void mqttSetup() {
+void mqtt_setup() {
     // mqtt setup
     // If broker address is 0.0.0.0 or the string is empty, don't use MQTT
     if(strcmp(config.mqtt.broker_address, "0.0.0.0") != 0 || strlen(config.mqtt.broker_address) > 0) {

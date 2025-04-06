@@ -136,12 +136,12 @@ void setup() {
 
     if(strlen(config.wifi.ssid) > 0){
         Serial.println("Setting up WiFi");
-        wifiSetup();
+        wifi_setup();
     }
     else{
         Serial.println("No SSID configured. Skipping WiFi setup");
     }
-    mqttSetup();
+    mqtt_setup();
     
     Serial.println("Setup complete.\n\nType 'help' for a list of possible commands.");
     Serial.println("Press enter to confirm a command");
@@ -189,7 +189,7 @@ void handle_serial_input(){
 
 void handle_mqtt(){
     static uint32_t next_sensor_poll_ticktime = 0;
-    mqttMaintainConnection();
+    mqtt_maintain_connection();
 
     if(next_sensor_poll_ticktime <= xTaskGetTickCount()){
         // set next time when the sensors should be polled again

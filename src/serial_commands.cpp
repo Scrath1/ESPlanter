@@ -120,13 +120,13 @@ void cmd_reset(const char* cmd, uint32_t cmd_len){
 void cmd_wifiSetup(const char* cmd, uint32_t cmd_len){
     (void) cmd;
     (void) cmd_len;
-    wifiSetup();
+    wifi_setup();
 }
 
 void cmd_mqttSetup(const char* cmd, uint32_t cmd_len){
     (void) cmd;
     (void) cmd_len;
-    mqttSetup();
+    mqtt_setup();
 }
 
 void cmd_mqttState(const char* cmd, uint32_t cmd_len){

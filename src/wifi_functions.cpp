@@ -1,7 +1,7 @@
 #include "wifi_functions.h"
 #include "global.h"
 
-const char* encryptionTypeToString(wifi_auth_mode_t encryptionType) {
+const char* encryption_type_to_string(wifi_auth_mode_t encryptionType) {
     switch(encryptionType) {
         case WIFI_AUTH_OPEN:
             return "open";
@@ -26,7 +26,7 @@ const char* encryptionTypeToString(wifi_auth_mode_t encryptionType) {
     }
 }
 
-uint32_t wifiScan() {
+uint32_t wifi_scan() {
     const uint32_t n = WiFi.scanNetworks();
     if(0 == n) {
         Serial.println("No networks found");
@@ -35,15 +35,15 @@ uint32_t wifiScan() {
         Serial.println("Nr | SSID                             | RSSI | CH | Encryption");
         for(uint32_t i = 0; i < n && i < 5; i++) {
             Serial.printf("%2u | %-32.32s | %4d | %2d | %s\n", i + 1, WiFi.SSID(i), WiFi.RSSI(i), WiFi.channel(i),
-                          encryptionTypeToString(WiFi.encryptionType(i)));
+                          encryption_type_to_string(WiFi.encryptionType(i)));
         }
     }
     WiFi.scanDelete();
     return n;
 }
 
-void wifiSetup() {
-    wifiScan();
+void wifi_setup() {
+    wifi_scan();
 
     WiFi.mode(WIFI_STA);
     WiFi.setHostname(config.wifi.hostname);

@@ -14,13 +14,13 @@ extern MQTTClient mqttClient;
  * 
  * This function can be re-run multiple times without issues
  */
-void mqttSetup();
+void mqtt_setup();
 
 /**
  * Checks whether the MQTT client is still connected.
  * If not, an attempt to reconnect is made.
  * On successful reconnect, topic subscriptions are renewed
  */
-void mqttMaintainConnection();
+void mqtt_maintain_connection();
 
 #endif // MQTT_FUNCTIONS_H
