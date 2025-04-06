@@ -1,15 +1,11 @@
-#ifndef MQTT_TASK_H
-#define MQTT_TASK_H
+#ifndef MQTT_FUNCTIONS_H
+#define MQTT_FUNCTIONS_H
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "global.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-
-#define MQTT_TASK_NAME ("MQTT_Task")
-#define MQTT_TASK_STACK_SIZE (2048)
-#define MQTT_TASK_PRIORITY (configMAX_PRIORITIES / 2 + 1)
 
 extern PubSubClient mqttClient;
 
@@ -22,4 +18,11 @@ extern PubSubClient mqttClient;
  */
 void mqttSetup();
 
-#endif // MQTT_TASK_H
+/**
+ * Checks whether the MQTT client is still connected.
+ * If not, an attempt to reconnect is made.
+ * On successful reconnect, topic subscriptions are renewed
+ */
+void mqttMaintainConnection();
+
+#endif // MQTT_FUNCTIONS_H

@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include "global.h"
 #include "wifi_functions.h"
-#include "mqtt_task.h"
+#include "mqtt_functions.h"
 
 char input_buffer[SERIAL_CMD_INPUT_BUFFER_SIZE];
 

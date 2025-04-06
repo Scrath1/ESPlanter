@@ -7,7 +7,7 @@
 #include "static_config.h"
 #include "serial_commands.h"
 #include "wifi_functions.h"
-#include "mqtt_task.h"
+#include "mqtt_functions.h"
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
@@ -187,16 +187,15 @@ void handle_serial_input(){
     }
 }
 
-void mqtt_subscription_callback(const char topic[], byte* payload, unsigned int length){
-    // ToDo: Subscribe to relevant topics and handle incoming MQTT messages
-}
-
 void handle_mqtt(){
-    static uint32_t interval_cnt = 0;
-    // ToDo: Make this configurable from config struct
-    uint32_t sensor_poll_interval_limit = MQTT_DEFAULT_UPDATE_INTERVAL_MS / MAIN_LOOP_CYCLE_TIME_MS;
-    if(interval_cnt >= sensor_poll_interval_limit){
-        interval_cnt = 0;
+    static uint32_t next_sensor_poll_ticktime = 0;
+    mqttClient.loop();
+    mqttMaintainConnection();
+
+    if(next_sensor_poll_ticktime <= xTaskGetTickCount()){
+        // set next time when the sensors should be polled again
+        next_sensor_poll_ticktime = xTaskGetTickCount() + MQTT_DEFAULT_UPDATE_INTERVAL_MS;
+
         // Poll sensors and publish values
         char topic[256] = "";
         char val_str[32] = "";
@@ -212,14 +211,12 @@ void handle_mqtt(){
     }
     // ToDo: Apply filter to sensor readings
 
-    // Increment interval counter
-    interval_cnt++;
+    // Work through accumalated mqtt library tasks
+    mqttClient.loop();
 }
 
 void loop() {
     // put your main code here, to run repeatedly:
     handle_serial_input();
     handle_mqtt();
-    // ToDo: Switch to freertos delay until function for better timing reliability
-    delay(MAIN_LOOP_CYCLE_TIME_MS);
 }
