@@ -1,5 +1,5 @@
-#ifndef WIFI_HELPERS_H
-#define WIFI_HELPERS_H
+#ifndef WIFI_FUNCTIONS_H
+#define WIFI_FUNCTIONS_H
 #include <cstdint>
 #include <Arduino.h>
 #include <WiFi.h>
@@ -19,4 +19,4 @@ uint32_t wifiScan();
  */
 void wifiSetup();
 
-#endif // WIFI_HELPERS_H
+#endif // WIFI_FUNCTIONS_H

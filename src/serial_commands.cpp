@@ -2,7 +2,8 @@
 #include "static_config.h"
 #include <Arduino.h>
 #include "global.h"
-#include "wifi_helpers.h"
+#include "wifi_functions.h"
+#include "mqtt_task.h"
 
 char input_buffer[SERIAL_CMD_INPUT_BUFFER_SIZE];
 
@@ -122,13 +123,28 @@ void cmd_wifiSetup(const char* cmd, uint32_t cmd_len){
     wifiSetup();
 }
 
+void cmd_mqttSetup(const char* cmd, uint32_t cmd_len){
+    (void) cmd;
+    (void) cmd_len;
+    mqttSetup();
+}
+
+void cmd_mqttState(const char* cmd, uint32_t cmd_len){
+    (void) cmd;
+    (void) cmd_len;
+    if(mqttClient.connected()) Serial.println("MQTT client is connected");
+    else Serial.println("MQTT client is not connected");
+}
+
 Stint::Command commands[] = {
     {.name = "help", .function = cmd_help, .helptext = "Lists all commands and their helptext"},
     {.name = "list", .function = cmd_list, .helptext = "Lists all config variable names"},
     {.name = "set", .function = cmd_set, .helptext = "Sets a variable in the config by name, e.g. \"set config.wifi.ssid: ExampleSSID\""},
     {.name = "get", .function = cmd_get, .helptext = "Prints the value of a config variable"},
     {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"},
-    {.name = "wifi_setup", .function = cmd_wifiSetup, .helptext = "Re-runs the WiFi setup process"}
+    {.name = "wifi_setup", .function = cmd_wifiSetup, .helptext = "Re-runs the WiFi setup process"},
+    {.name = "mqtt_setup", .function = cmd_mqttSetup, .helptext = "Re-runs the MQTT setup process"},
+    {.name = "mqtt_state", .function = cmd_mqttState, .helptext = "Returns the connection state of the MQTT client"}
 };
 
 Stint stint{commands, sizeof(commands) / sizeof(commands[0]), input_buffer, SERIAL_CMD_INPUT_BUFFER_SIZE};

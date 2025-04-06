@@ -1,4 +1,4 @@
-#include "wifi_helpers.h"
+#include "wifi_functions.h"
 #include "global.h"
 
 const char* encryptionTypeToString(wifi_auth_mode_t encryptionType) {

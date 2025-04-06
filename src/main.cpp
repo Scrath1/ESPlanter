@@ -1,10 +1,13 @@
 #include <Arduino.h>
 #include <LittleFS.h>
 #include "drivers/pump.h"
+#include "drivers/light_sensor.h"
+#include "drivers/soil_sensor.h"
 #include "global.h"
 #include "static_config.h"
 #include "serial_commands.h"
-#include "wifi_helpers.h"
+#include "wifi_functions.h"
+#include "mqtt_task.h"
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
@@ -89,7 +92,10 @@ void setup() {
     Serial.println("ESPlanter");
     // put your setup code here, to run once:
     stint.setAutoBackspace(true);
+
     init_pump();
+    init_light_sensor();
+
     if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
         Serial.println("Failed to initialize filesystem");
         while(1);
@@ -135,13 +141,13 @@ void setup() {
     else{
         Serial.println("No SSID configured. Skipping WiFi setup");
     }
+    mqttSetup();
     
     Serial.println("Setup complete.\n\nType 'help' for a list of possible commands.");
     Serial.println("Press enter to confirm a command");
 }
 
-void loop() {
-    // put your main code here, to run repeatedly:
+void handle_serial_input(){
     bool skip_next_newline = false;
     while(Serial.available() > 0){
         char c = Serial.read();
@@ -179,4 +185,41 @@ void loop() {
                 break;
         }
     }
+}
+
+void mqtt_subscription_callback(const char topic[], byte* payload, unsigned int length){
+    // ToDo: Subscribe to relevant topics and handle incoming MQTT messages
+}
+
+void handle_mqtt(){
+    static uint32_t interval_cnt = 0;
+    // ToDo: Make this configurable from config struct
+    uint32_t sensor_poll_interval_limit = MQTT_DEFAULT_UPDATE_INTERVAL_MS / MAIN_LOOP_CYCLE_TIME_MS;
+    if(interval_cnt >= sensor_poll_interval_limit){
+        interval_cnt = 0;
+        // Poll sensors and publish values
+        char topic[256] = "";
+        char val_str[32] = "";
+        // get light reading
+        snprintf(topic, sizeof(topic), "%s/%s/lux", MQTT_BASE_TOPIC, config.mqtt.device_topic);
+        snprintf(val_str, sizeof(val_str), "%i", get_lux_reading());
+        mqttClient.publish(topic, val_str);
+
+        // Get soil reading
+        snprintf(topic, sizeof(topic), "%s/%s/moisture", MQTT_BASE_TOPIC, config.mqtt.device_topic);
+        snprintf(val_str, sizeof(val_str), "%i", get_moisture_percentage());
+        mqttClient.publish(topic, val_str);
+    }
+    // ToDo: Apply filter to sensor readings
+
+    // Increment interval counter
+    interval_cnt++;
+}
+
+void loop() {
+    // put your main code here, to run repeatedly:
+    handle_serial_input();
+    handle_mqtt();
+    // ToDo: Switch to freertos delay until function for better timing reliability
+    delay(MAIN_LOOP_CYCLE_TIME_MS);
 }

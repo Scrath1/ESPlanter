@@ -10,7 +10,7 @@ typedef struct{
         char hostname[MAX_WIFI_HOSTNAME_LEN] = "";
     } wifi;
     struct {
-        char broker_address[MAX_MQTT_BROKER_ADDRESS_LEN] = "";
+        char broker_address[MAX_MQTT_BROKER_ADDRESS_LEN] = "0.0.0.0";
         uint32_t broker_port = 1883;
         char client_id[MAX_MQTT_CLIENT_ID_LEN] = "";
         char username[MAX_MQTT_USERNAME_LEN] = "";
