@@ -189,7 +189,6 @@ void handle_serial_input(){
 
 void handle_mqtt(){
     static uint32_t next_sensor_poll_ticktime = 0;
-    mqttClient.loop();
     mqttMaintainConnection();
 
     if(next_sensor_poll_ticktime <= xTaskGetTickCount()){
@@ -212,7 +211,7 @@ void handle_mqtt(){
     // ToDo: Apply filter to sensor readings
 
     // Work through accumalated mqtt library tasks
-    mqttClient.loop();
+    if(!mqttClient.loop()) Serial.println("Error while running mqtt loop function");
 }
 
 void loop() {

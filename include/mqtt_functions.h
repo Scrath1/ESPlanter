@@ -1,13 +1,11 @@
 #ifndef MQTT_FUNCTIONS_H
 #define MQTT_FUNCTIONS_H
 #include <WiFi.h>
-#include <PubSubClient.h>
+#include <MQTT.h>
 #include "global.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+extern MQTTClient mqttClient;
 
-extern PubSubClient mqttClient;
 
 /**
  * Runs the MQTT setup process, thereby checking the validity of

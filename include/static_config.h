@@ -45,5 +45,6 @@
 #define MQTT_BASE_TOPIC "ESPlanter"
 // Default interval for how often updated sensor readings are sent to the server
 #define MQTT_DEFAULT_UPDATE_INTERVAL_MS (15000)
+#define MQTT_CONNECTION_RETRY_INTERVAL_S (15)
 
 #endif // STATIC_CONFIG_H

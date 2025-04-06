@@ -29,8 +29,5 @@ void run_pump(uint32_t duration_ms){
         xTimerStart(pump_callback_timer, portMAX_DELAY);
 
         digitalWrite(PIN_PUMP, PUMP_ACTIVE_LEVEL);
-        Serial.print("Running pump for ");
-        Serial.print(duration_ms);
-        Serial.println(" ms");
     }
 }
