@@ -11,7 +11,9 @@
 void init_pump();
 
 /**
- * Run the pump for a set duration (milliseconds)
+ * Run the pump for a set duration (milliseconds).
+ * If given a duration of 0, the pump will be stopped in case
+ * it is already running
  */
 void run_pump(uint32_t duration_ms);
 

@@ -19,12 +19,18 @@ void init_pump(){
 
 void run_pump(uint32_t duration_ms){
     // Stop timer in case it was running and set new time until callback
-    xTimerStop(pump_callback_timer, portMAX_DELAY);
-    xTimerChangePeriod(pump_callback_timer, pdMS_TO_TICKS(duration_ms), portMAX_DELAY);
-    xTimerStart(pump_callback_timer, portMAX_DELAY);
+    if(duration_ms == 0){
+        digitalWrite(PIN_PUMP, PUMP_INACTIVE_LEVEL);
+        xTimerStop(pump_callback_timer, portMAX_DELAY);
+    }
+    else{
+        xTimerStop(pump_callback_timer, portMAX_DELAY);
+        xTimerChangePeriod(pump_callback_timer, pdMS_TO_TICKS(duration_ms), portMAX_DELAY);
+        xTimerStart(pump_callback_timer, portMAX_DELAY);
 
-    digitalWrite(PIN_PUMP, PUMP_ACTIVE_LEVEL);
-    Serial.print("Running pump for ");
-    Serial.print(duration_ms);
-    Serial.println(" ms");
+        digitalWrite(PIN_PUMP, PUMP_ACTIVE_LEVEL);
+        Serial.print("Running pump for ");
+        Serial.print(duration_ms);
+        Serial.println(" ms");
+    }
 }
