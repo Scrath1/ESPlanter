@@ -1,6 +1,7 @@
 #include "mqtt_functions.h"
 
 #include "drivers/pump.h"
+#include "mqtt_discovery.h"
 
 WiFiClient wifiClient;
 MQTTClient mqttClient;
@@ -32,10 +33,7 @@ void update_mqtt_subscriptions() {
 
 void mqtt_on_reconnect() {
     update_mqtt_subscriptions();
-    Serial.printf("Pump duration topic is: %s\n", pump_duration_topic);
-    // if(!mqttClient.publish(pump_duration_topic, "0")) {
-    //     Serial.println("Failed to send message to pump duration topic");
-    // }
+    send_mqtt_discovery_msg();
 }
 
 void mqtt_maintain_connection() {

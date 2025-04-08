@@ -16,7 +16,8 @@ typedef struct {
         char client_id[MAX_MQTT_CLIENT_ID_LEN] = "";
         char username[MAX_MQTT_USERNAME_LEN] = "";
         char password[MAX_MQTT_PASSWORD_LEN] = "";
-        char device_topic[MAX_MQTT_DEVICE_TOPIC_LEN] = "";
+        char device_topic[MAX_MQTT_DEVICE_TOPIC_LEN] = "";  // leave empty, this will be filled automatically
+        char discovery_prefix[MAX_MQTT_DISCOVERY_TOPIC_LEN] = "homeassistant";
     } mqtt;
     uint32_t pump_duration_ms = DEFAULT_PUMP_DURATION_MS;
 } ConfigStruct_t;

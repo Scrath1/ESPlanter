@@ -43,6 +43,10 @@
 #define SERIAL_CMD_INPUT_BUFFER_SIZE (256)
 // Maximum string length allocated for topic strings
 #define MAX_TOPIC_STRING_SIZE (256)
+// Maximum string length for the MQTT auto-discovery message for homeassistant
+#define MAX_AUTO_DISCOVERY_MSG_LEN (2048)
+// Maximum string length for the base topic of the homeassistant auto discovery
+#define MAX_MQTT_DISCOVERY_TOPIC_LEN (64)
 
 // MQTT configuration
 // ============================================
@@ -67,5 +71,13 @@
 
 // Time in ms after which the ESP will give up trying to connect to an WiFi station
 #define WIFI_CONNECTION_TIMEOUT_MS 5000
+
+// Device information
+// ============================================
+#define MANUFACTURER "Scrath"
+#define MODEL "ESPlanter"
+#define SW_VERSION "1.0"
+#define HW_VERSION "1.0"
+#define SW_URL "https://github.com/Scrath1/ESPlanter"
 
 #endif  // STATIC_CONFIG_H
