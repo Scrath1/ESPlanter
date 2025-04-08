@@ -73,6 +73,9 @@ void mqtt_subscription_callback(MQTTClient* client, const char topic[], char* pa
             Serial.printf("Updated pump duration to %lu\n", duration_ms);
             config.pump_duration_ms = duration_ms;
         }
+        if(CFG_RC_SUCCESS != config_saveToFile(&config_table, CONFIG_FILE_NAME)){
+            Serial.println("Error while saving updated pump duration to file");
+        }
     } else if(strcmp(topic, pump_trigger_topic) == 0) {
         if(payload[0] == '0') {
             // stop running pump
