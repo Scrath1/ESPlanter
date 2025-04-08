@@ -93,7 +93,7 @@ void setup() {
     // put your setup code here, to run once:
     stint.setAutoBackspace(true);
 
-    init_pump();
+    pump_init();
     init_light_sensor();
 
     if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)){

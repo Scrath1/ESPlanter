@@ -8,13 +8,15 @@
  * for triggering the callback function to stop the pump
  * after the given run duration
  */
-void init_pump();
+void pump_init();
 
 /**
  * Run the pump for a set duration (milliseconds).
  * If given a duration of 0, the pump will be stopped in case
  * it is already running
  */
-void run_pump(uint32_t duration_ms);
+void pump_run(uint32_t duration_ms);
 
-#endif // PUMP_H
+bool pump_is_running();
+
+#endif  // PUMP_H

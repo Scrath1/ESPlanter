@@ -59,7 +59,7 @@ void mqtt_subscription_callback(MQTTClient* client, const char topic[], char* pa
         // apply upper duration limit
         if(duration_ms > MAX_PUMP_RUNTIME_MS) duration_ms = MAX_PUMP_RUNTIME_MS;
         Serial.printf("Pump triggered for %lu ms\n", duration_ms);
-        run_pump(duration_ms);
+        pump_run(duration_ms);
     }
 }
 
