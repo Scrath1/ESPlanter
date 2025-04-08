@@ -17,7 +17,7 @@ ConfigEntry_t config_entries[] = {
     {STRINGIFY(config.mqtt.password), CONFIG_STRING, &config.mqtt.password, sizeof(config.mqtt.password), CFG_PERM_SECRET_RW},
     {STRINGIFY(config.mqtt.device_topic), CONFIG_STRING, &config.mqtt.device_topic, sizeof(config.mqtt.device_topic), CFG_PERM_RW},
     {STRINGIFY(config.mqtt.discovery_prefix), CONFIG_STRING, &config.mqtt.discovery_prefix, sizeof(config.mqtt.discovery_prefix), CFG_PERM_RW},
-    {STRINGIFY(config.pump_duration_ms), CONFIG_STRING, &config.pump_duration_ms, sizeof(config.pump_duration_ms), CFG_PERM_RW}
+    {STRINGIFY(config.pump_duration_ms), CONFIG_UINT32, &config.pump_duration_ms, sizeof(config.pump_duration_ms), CFG_PERM_RW}
 };
 
 ConfigTable_t config_table{
