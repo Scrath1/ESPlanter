@@ -196,7 +196,7 @@ void handle_mqtt(){
         next_sensor_poll_ticktime = xTaskGetTickCount() + MQTT_DEFAULT_UPDATE_INTERVAL_MS;
 
         // Poll sensors and publish values
-        char topic[256] = "";
+        char topic[MAX_TOPIC_STRING_SIZE] = "";
         char val_str[32] = "";
         // get light reading
         snprintf(topic, sizeof(topic), "%s/%s/lux", MQTT_BASE_TOPIC, config.mqtt.device_topic);
@@ -207,6 +207,11 @@ void handle_mqtt(){
         snprintf(topic, sizeof(topic), "%s/%s/moisture", MQTT_BASE_TOPIC, config.mqtt.device_topic);
         snprintf(val_str, sizeof(val_str), "%i", get_moisture_percentage());
         mqttClient.publish(topic, val_str);
+
+        // Also publish the currently configured pump run duration
+        extern char pump_duration_topic[MAX_TOPIC_STRING_SIZE];
+        snprintf(val_str, sizeof(val_str), "%lu", config.pump_duration_ms);
+        mqttClient.publish(pump_duration_topic, val_str);
     }
     // ToDo: Apply filter to sensor readings
 

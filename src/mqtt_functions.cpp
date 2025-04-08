@@ -5,25 +5,37 @@
 WiFiClient wifiClient;
 MQTTClient mqttClient;
 // The topic on which messages to trigger the pump are received
-char pump_trigger_topic[256] = "";
+char pump_duration_topic[MAX_TOPIC_STRING_SIZE] = "";
+char pump_trigger_topic[MAX_TOPIC_STRING_SIZE] = "";
 
 void update_mqtt_subscriptions() {
-    if(!mqttClient.unsubscribe(pump_trigger_topic)) {
-        Serial.println("Failed to unsubscribe from old pump topic");
+    // Pump active duration
+    if(!mqttClient.unsubscribe(pump_duration_topic)) {
+        Serial.println("Failed to unsubscribe from old pump duration topic");
     }
-    snprintf(pump_trigger_topic, sizeof(pump_trigger_topic), "%s/%s/trigger_pump_ms", MQTT_BASE_TOPIC,
+    snprintf(pump_duration_topic, sizeof(pump_duration_topic), "%s/%s/pump/duration_ms", MQTT_BASE_TOPIC,
+             config.mqtt.device_topic);
+    if(!mqttClient.subscribe(pump_duration_topic)) {
+        Serial.println("Failed to subscribe to new pump duration topic");
+    }
+
+    // Pump trigger
+    if(!mqttClient.unsubscribe(pump_trigger_topic)){
+        Serial.println("Failed to unscubscribe from old pump trigger topic");
+    }
+    snprintf(pump_trigger_topic, sizeof(pump_trigger_topic), "%s/%s/pump/trigger", MQTT_BASE_TOPIC,
              config.mqtt.device_topic);
     if(!mqttClient.subscribe(pump_trigger_topic)) {
-        Serial.println("Failed to subscribe to new pump topic");
+        Serial.println("Failed to subscribe to new pump trigger topic");
     }
 }
 
 void mqtt_on_reconnect() {
     update_mqtt_subscriptions();
-    Serial.printf("Pump trigger topic is: %s\n", pump_trigger_topic);
-    if(!mqttClient.publish(pump_trigger_topic, "0")) {
-        Serial.println("Failed to send message to pump trigger topic");
-    }
+    Serial.printf("Pump duration topic is: %s\n", pump_duration_topic);
+    // if(!mqttClient.publish(pump_duration_topic, "0")) {
+    //     Serial.println("Failed to send message to pump duration topic");
+    // }
 }
 
 void mqtt_maintain_connection() {
@@ -46,9 +58,8 @@ void mqtt_maintain_connection() {
 }
 
 void mqtt_subscription_callback(MQTTClient* client, const char topic[], char* payload, int length) {
-    Serial.printf("Received MQTT message: topic=%s, payload=%s\n", topic, payload);
-    // ToDo: Subscribe to relevant topics and handle incoming MQTT messages
-    if(strcmp(topic, pump_trigger_topic) == 0) {
+    // Serial.printf("Received MQTT message: topic=%s, payload=%s\n", topic, payload);
+    if(strcmp(topic, pump_duration_topic) == 0) {
         // pump message
         if(payload[0] == '-') return;
         uint32_t duration_ms = strtoull((char*)payload, NULL, 10);
@@ -57,9 +68,23 @@ void mqtt_subscription_callback(MQTTClient* client, const char topic[], char* pa
             return;
         }
         // apply upper duration limit
-        if(duration_ms > MAX_PUMP_RUNTIME_MS) duration_ms = MAX_PUMP_RUNTIME_MS;
-        Serial.printf("Pump triggered for %lu ms\n", duration_ms);
-        pump_run(duration_ms);
+        if(duration_ms > MAX_PUMP_RUNTIME_MS){
+            duration_ms = MAX_PUMP_RUNTIME_MS;
+        }
+        if(duration_ms != config.pump_duration_ms){
+            Serial.printf("Updated pump duration to %lu\n", duration_ms);
+            config.pump_duration_ms = duration_ms;
+        }
+    }
+    else if(strcmp(topic, pump_trigger_topic) == 0){
+        if(payload[0] == '0'){
+            // stop running pump
+            pump_run(0);
+        }
+        else if(payload[0] == '1'){
+            Serial.println("Triggered pump via MQTT interface");
+            pump_run(config.pump_duration_ms);
+        }
     }
 }
 

@@ -17,6 +17,7 @@ typedef struct{
         char password[MAX_MQTT_PASSWORD_LEN] = "";
         char device_topic[MAX_MQTT_DEVICE_TOPIC_LEN] = "";
     } mqtt;
+    uint32_t pump_duration_ms = DEFAULT_PUMP_DURATION_MS;
 } ConfigStruct_t;
 
 extern ConfigTable_t config_table;

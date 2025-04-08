@@ -8,6 +8,7 @@
 
  // Pump pin
 #define PIN_PUMP (D10)
+#define DEFAULT_PUMP_DURATION_MS (3000)
 // Soil sensor pin
 #define PIN_SOIL_SENSOR (A0)
 #define MOISTURE_LOWER_LIMIT (1196)
@@ -28,6 +29,7 @@
 #define MAX_MQTT_DEVICE_TOPIC_LEN (64)
 
 #define SERIAL_CMD_INPUT_BUFFER_SIZE (256)
+#define MAX_TOPIC_STRING_SIZE (256)
 
 // Name of the general configuration file. Keep in mind that
 // LittleFS requires absolute file paths.
