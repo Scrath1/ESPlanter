@@ -1,4 +1,5 @@
 #include "wifi_functions.h"
+
 #include "global.h"
 
 const char* encryption_type_to_string(wifi_auth_mode_t encryptionType) {
@@ -59,7 +60,7 @@ void wifi_setup() {
 
     if(WL_CONNECTED != WiFi.status()) {
         // WiFi setup failed
-        
+
         Serial.printf("Failed to connect to %s network. Status=%u\n", config.wifi.ssid, WiFi.status());
         // WiFi.mode(WIFI_AP);
         // if(!WiFi.softAP(WIFI_AP_NAME)) {

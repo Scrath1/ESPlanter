@@ -14,4 +14,4 @@ void init_light_sensor();
  */
 int32_t get_lux_reading();
 
-#endif // LIGHT_SENSOR_H
+#endif  // LIGHT_SENSOR_H

@@ -20,7 +20,7 @@ void update_mqtt_subscriptions() {
     }
 
     // Pump trigger
-    if(!mqttClient.unsubscribe(pump_trigger_topic)){
+    if(!mqttClient.unsubscribe(pump_trigger_topic)) {
         Serial.println("Failed to unscubscribe from old pump trigger topic");
     }
     snprintf(pump_trigger_topic, sizeof(pump_trigger_topic), "%s/%s/pump/trigger", MQTT_BASE_TOPIC,
@@ -68,20 +68,18 @@ void mqtt_subscription_callback(MQTTClient* client, const char topic[], char* pa
             return;
         }
         // apply upper duration limit
-        if(duration_ms > MAX_PUMP_RUNTIME_MS){
+        if(duration_ms > MAX_PUMP_RUNTIME_MS) {
             duration_ms = MAX_PUMP_RUNTIME_MS;
         }
-        if(duration_ms != config.pump_duration_ms){
+        if(duration_ms != config.pump_duration_ms) {
             Serial.printf("Updated pump duration to %lu\n", duration_ms);
             config.pump_duration_ms = duration_ms;
         }
-    }
-    else if(strcmp(topic, pump_trigger_topic) == 0){
-        if(payload[0] == '0'){
+    } else if(strcmp(topic, pump_trigger_topic) == 0) {
+        if(payload[0] == '0') {
             // stop running pump
             pump_run(0);
-        }
-        else if(payload[0] == '1'){
+        } else if(payload[0] == '1') {
             Serial.println("Triggered pump via MQTT interface");
             pump_run(config.pump_duration_ms);
         }

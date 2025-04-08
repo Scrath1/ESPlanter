@@ -13,4 +13,4 @@ void init_soil_sensor();
  */
 uint8_t get_moisture_percentage();
 
-#endif // SOIL_SENSOR_H
+#endif  // SOIL_SENSOR_H

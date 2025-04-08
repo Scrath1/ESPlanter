@@ -1,9 +1,10 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 #include <config_table.h>
+
 #include "static_config.h"
 
-typedef struct{
+typedef struct {
     struct {
         char ssid[MAX_WIFI_SSID_LEN] = "";
         char password[MAX_WIFI_PASSWORD_LEN] = "";
@@ -23,4 +24,4 @@ typedef struct{
 extern ConfigTable_t config_table;
 extern ConfigStruct_t config;
 
-#endif // GLOBAL_H
+#endif  // GLOBAL_H

@@ -1,9 +1,11 @@
 #include "serial_commands.h"
-#include "static_config.h"
+
 #include <Arduino.h>
+
 #include "global.h"
-#include "wifi_functions.h"
 #include "mqtt_functions.h"
+#include "static_config.h"
+#include "wifi_functions.h"
 
 char input_buffer[SERIAL_CMD_INPUT_BUFFER_SIZE];
 
@@ -13,7 +15,7 @@ void print_config(const ConfigTable_t& cfg_table) {
         const auto& e = cfg_table.entries[i];
         Serial.print(e.key);
         Serial.print(": ");
-        if(e.perm == CFG_PERM_SECRET_RO || e.perm == CFG_PERM_SECRET_RW){
+        if(e.perm == CFG_PERM_SECRET_RO || e.perm == CFG_PERM_SECRET_RW) {
             Serial.println("<redacted>");
             continue;
         }
@@ -40,10 +42,10 @@ void print_config(const ConfigTable_t& cfg_table) {
 }
 
 void cmd_help(const char* cmd, uint32_t cmd_len) {
-    (void) cmd;
-    (void) cmd_len;
-    const Stint::Command * const cmd_table = stint.getCommands();
-    for(uint32_t i = 0; i < stint.getNumCommands(); i++){
+    (void)cmd;
+    (void)cmd_len;
+    const Stint::Command* const cmd_table = stint.getCommands();
+    for(uint32_t i = 0; i < stint.getNumCommands(); i++) {
         const Stint::Command& cmd = cmd_table[i];
         Serial.print(cmd.name);
         Serial.print(": ");
@@ -52,8 +54,8 @@ void cmd_help(const char* cmd, uint32_t cmd_len) {
 }
 
 void cmd_list(const char* cmd, uint32_t cmd_len) {
-    (void) cmd;
-    (void) cmd_len;
+    (void)cmd;
+    (void)cmd_len;
     print_config(config_table);
 }
 
@@ -61,7 +63,7 @@ void cmd_set(const char* cmd, uint32_t cmd_len) {
     char buf[256] = "";
     strncpy(buf, cmd, cmd_len);
     CfgRet_t ret = config_parseKVStr(&config_table, buf, cmd_len);
-    switch(ret){
+    switch(ret) {
         default:
             Serial.printf("Unknown error while parsing: Code=%i", ret);
             break;
@@ -81,11 +83,11 @@ void cmd_set(const char* cmd, uint32_t cmd_len) {
 void cmd_get(const char* cmd, uint32_t cmd_len) {
     ConfigEntry_t entry;
 
-    if(CFG_RC_SUCCESS != config_getByKey(&config_table, cmd, &entry)){
+    if(CFG_RC_SUCCESS != config_getByKey(&config_table, cmd, &entry)) {
         Serial.println("Couldn't find matching config entry");
         return;
     }
-    if(entry.perm == CFG_PERM_SECRET_RO || entry.perm == CFG_PERM_SECRET_RW){
+    if(entry.perm == CFG_PERM_SECRET_RO || entry.perm == CFG_PERM_SECRET_RW) {
         Serial.println("Protected config entry value");
         return;
     }
@@ -111,40 +113,43 @@ void cmd_get(const char* cmd, uint32_t cmd_len) {
     }
 }
 
-void cmd_reset(const char* cmd, uint32_t cmd_len){
-    (void) cmd;
-    (void) cmd_len;
+void cmd_reset(const char* cmd, uint32_t cmd_len) {
+    (void)cmd;
+    (void)cmd_len;
     ESP.restart();
 }
 
-void cmd_wifiSetup(const char* cmd, uint32_t cmd_len){
-    (void) cmd;
-    (void) cmd_len;
+void cmd_wifiSetup(const char* cmd, uint32_t cmd_len) {
+    (void)cmd;
+    (void)cmd_len;
     wifi_setup();
 }
 
-void cmd_mqttSetup(const char* cmd, uint32_t cmd_len){
-    (void) cmd;
-    (void) cmd_len;
+void cmd_mqttSetup(const char* cmd, uint32_t cmd_len) {
+    (void)cmd;
+    (void)cmd_len;
     mqtt_setup();
 }
 
-void cmd_mqttState(const char* cmd, uint32_t cmd_len){
-    (void) cmd;
-    (void) cmd_len;
-    if(mqttClient.connected()) Serial.println("MQTT client is connected");
-    else Serial.println("MQTT client is not connected");
+void cmd_mqttState(const char* cmd, uint32_t cmd_len) {
+    (void)cmd;
+    (void)cmd_len;
+    if(mqttClient.connected())
+        Serial.println("MQTT client is connected");
+    else
+        Serial.println("MQTT client is not connected");
 }
 
 Stint::Command commands[] = {
     {.name = "help", .function = cmd_help, .helptext = "Lists all commands and their helptext"},
     {.name = "list", .function = cmd_list, .helptext = "Lists all config variable names"},
-    {.name = "set", .function = cmd_set, .helptext = "Sets a variable in the config by name, e.g. \"set config.wifi.ssid: ExampleSSID\""},
+    {.name = "set",
+     .function = cmd_set,
+     .helptext = "Sets a variable in the config by name, e.g. \"set config.wifi.ssid: ExampleSSID\""},
     {.name = "get", .function = cmd_get, .helptext = "Prints the value of a config variable"},
     {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"},
     {.name = "wifi_setup", .function = cmd_wifiSetup, .helptext = "Re-runs the WiFi setup process"},
     {.name = "mqtt_setup", .function = cmd_mqttSetup, .helptext = "Re-runs the MQTT setup process"},
-    {.name = "mqtt_state", .function = cmd_mqttState, .helptext = "Returns the connection state of the MQTT client"}
-};
+    {.name = "mqtt_state", .function = cmd_mqttState, .helptext = "Returns the connection state of the MQTT client"}};
 
 Stint stint{commands, sizeof(commands) / sizeof(commands[0]), input_buffer, SERIAL_CMD_INPUT_BUFFER_SIZE};

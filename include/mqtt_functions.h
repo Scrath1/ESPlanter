@@ -1,17 +1,17 @@
 #ifndef MQTT_FUNCTIONS_H
 #define MQTT_FUNCTIONS_H
-#include <WiFi.h>
 #include <MQTT.h>
+#include <WiFi.h>
+
 #include "global.h"
 
 extern MQTTClient mqttClient;
-
 
 /**
  * Runs the MQTT setup process, thereby checking the validity of
  * the configured broker address to determine whether an MQTT connection
  * is desired. If it is, a task for managing the connection is established.
- * 
+ *
  * This function can be re-run multiple times without issues
  */
 void mqtt_setup();
@@ -23,4 +23,4 @@ void mqtt_setup();
  */
 void mqtt_maintain_connection();
 
-#endif // MQTT_FUNCTIONS_H
+#endif  // MQTT_FUNCTIONS_H

@@ -1,17 +1,18 @@
 #include <Arduino.h>
 #include <LittleFS.h>
-#include "drivers/pump.h"
+
 #include "drivers/light_sensor.h"
+#include "drivers/pump.h"
 #include "drivers/soil_sensor.h"
 #include "global.h"
-#include "static_config.h"
-#include "serial_commands.h"
-#include "wifi_functions.h"
 #include "mqtt_functions.h"
+#include "serial_commands.h"
+#include "static_config.h"
+#include "wifi_functions.h"
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-CfgRet_t config_littleFSSaveToFile(const ConfigTable_t* cfg, const char* filename){
+CfgRet_t config_littleFSSaveToFile(const ConfigTable_t* cfg, const char* filename) {
     if(cfg == NULL || filename == NULL) return CFG_RC_ERROR_NULLPTR;
     fs::File file = LittleFS.open(filename, FILE_WRITE);
     if(!file) return CFG_RC_ERROR;
@@ -25,7 +26,7 @@ CfgRet_t config_littleFSSaveToFile(const ConfigTable_t* cfg, const char* filenam
         switch(e.type) {
             default:
             case CONFIG_NONE:
-                    continue;
+                continue;
             case CONFIG_BOOL:
                 ret = snprintf(line, sizeof(line), "%s: %u\n", e.key, *(bool*)e.value);
                 break;
@@ -43,8 +44,10 @@ CfgRet_t config_littleFSSaveToFile(const ConfigTable_t* cfg, const char* filenam
                 break;
         }
         // Check if snprintf was successful
-        if(ret > sizeof(line)) line_length_error = true;
-        else if(ret < 0) encoding_error = true;
+        if(ret > sizeof(line))
+            line_length_error = true;
+        else if(ret < 0)
+            encoding_error = true;
         else {
             // write to file
             file.print(line);
@@ -58,7 +61,7 @@ CfgRet_t config_littleFSSaveToFile(const ConfigTable_t* cfg, const char* filenam
     return CFG_RC_SUCCESS;
 }
 
-CfgRet_t config_littleFSloadFromFile(ConfigTable_t* cfg, const char* filename){
+CfgRet_t config_littleFSloadFromFile(ConfigTable_t* cfg, const char* filename) {
     if(cfg == NULL || filename == NULL) return CFG_RC_ERROR_NULLPTR;
     fs::File file = LittleFS.open(filename, FILE_READ);
     if(!file) return CFG_RC_ERROR;
@@ -67,7 +70,7 @@ CfgRet_t config_littleFSloadFromFile(ConfigTable_t* cfg, const char* filename){
     char line[FILE_MAX_LINE_LEN] = "";
     bool parsing_error_occurred = false;
     // Read each line
-    while(file.available()){
+    while(file.available()) {
         lineStr = file.readStringUntil('\n');
         uint32_t line_len = lineStr.length();
         if(line_len == 0) continue;
@@ -96,24 +99,22 @@ void setup() {
     pump_init();
     init_light_sensor();
 
-    if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
+    if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
         Serial.println("Failed to initialize filesystem");
         while(1);
     }
     config_setSaveLoadFunctions(config_littleFSSaveToFile, config_littleFSloadFromFile);
-    if(!LittleFS.exists(CONFIG_FILE_NAME)){
-        if(CFG_RC_SUCCESS != config_saveToFile(&config_table, CONFIG_FILE_NAME)){
+    if(!LittleFS.exists(CONFIG_FILE_NAME)) {
+        if(CFG_RC_SUCCESS != config_saveToFile(&config_table, CONFIG_FILE_NAME)) {
             Serial.println("Failed to create default config file");
             while(1);
-        }
-        else{
+        } else {
             Serial.println("Created default config file");
         }
-        
-    }
-    else{
+
+    } else {
         CfgRet_t ret = config_loadFromFile(&config_table, CONFIG_FILE_NAME);
-        switch(ret){
+        switch(ret) {
             case CFG_RC_SUCCESS:
                 Serial.println("Loaded config from file");
                 break;
@@ -134,46 +135,42 @@ void setup() {
     if(strlen(config.wifi.hostname) == 0)
         snprintf(config.wifi.hostname, sizeof(config.wifi.hostname), "ESPlanter-%llX", ESP.getEfuseMac());
 
-    if(strlen(config.wifi.ssid) > 0){
+    if(strlen(config.wifi.ssid) > 0) {
         Serial.println("Setting up WiFi");
         wifi_setup();
-    }
-    else{
+    } else {
         Serial.println("No SSID configured. Skipping WiFi setup");
     }
     mqtt_setup();
-    
+
     Serial.println("Setup complete.\n\nType 'help' for a list of possible commands.");
     Serial.println("Press enter to confirm a command");
 }
 
-void handle_serial_input(){
+void handle_serial_input() {
     bool skip_next_newline = false;
-    while(Serial.available() > 0){
+    while(Serial.available() > 0) {
         char c = Serial.read();
         // stupid handling of \r\n newlines
         // since some systems send just \r or just \n
         // for a newline and both individually trigger the command parser
-        if(c == '\r'){
+        if(c == '\r') {
             Serial.println();
             skip_next_newline = true;
-        }
-        else if(c == '\n' && !skip_next_newline){
+        } else if(c == '\n' && !skip_next_newline) {
             Serial.println();
-        }
-        else if(c == '\n' && skip_next_newline){
+        } else if(c == '\n' && skip_next_newline) {
             skip_next_newline = false;
-        }
-        else if(c == '\b'){
+        } else if(c == '\b') {
             // backspace implementation
-            Serial.print("\b \b"); // erases last char from terminal
+            Serial.print("\b \b");  // erases last char from terminal
             // Erasing the last char from the stint buffer is handled automatically
             // by the ingest function
-        }
-        else Serial.print(c);
+        } else
+            Serial.print(c);
 
         Stint::ErrorCode ret = stint.ingest(c);
-        switch(ret){
+        switch(ret) {
             default:
                 break;
             case Stint::BUFFER_FULL:
@@ -187,11 +184,11 @@ void handle_serial_input(){
     }
 }
 
-void handle_mqtt(){
+void handle_mqtt() {
     static uint32_t next_sensor_poll_ticktime = 0;
     mqtt_maintain_connection();
 
-    if(next_sensor_poll_ticktime <= xTaskGetTickCount()){
+    if(next_sensor_poll_ticktime <= xTaskGetTickCount()) {
         // set next time when the sensors should be polled again
         next_sensor_poll_ticktime = xTaskGetTickCount() + MQTT_DEFAULT_UPDATE_INTERVAL_MS;
 
