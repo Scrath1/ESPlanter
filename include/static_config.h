@@ -15,8 +15,10 @@
 #define DEFAULT_PUMP_DURATION_MS (3000)
 // Soil sensor pin
 #define PIN_SOIL_SENSOR (A0)
-#define MOISTURE_LOWER_LIMIT (1196)
-#define MOISTURE_UPPER_LIMIT (3367)
+// Calibration values for the raw adc values of the moisture sensor.
+// You can preset these at compile time or overwrite them at runtime
+#define MOISTURE_RAW_LOWER_LIMIT (0)
+#define MOISTURE_RAW_UPPER_LIMIT (4095)
 // Absolute maximum continuous runtime of the pump in milliseconds
 #define MAX_PUMP_RUNTIME_MS (60000)
 

@@ -20,6 +20,8 @@ typedef struct {
         char discovery_prefix[MAX_MQTT_DISCOVERY_TOPIC_LEN] = "homeassistant";
     } mqtt;
     uint32_t pump_duration_ms = DEFAULT_PUMP_DURATION_MS;
+    uint32_t moisture_sensor_lower_limit = MOISTURE_RAW_LOWER_LIMIT;
+    uint32_t moisture_sensor_upper_limit = MOISTURE_RAW_UPPER_LIMIT;
 } ConfigStruct_t;
 
 extern ConfigTable_t config_table;

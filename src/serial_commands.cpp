@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 
+#include "drivers/soil_sensor.h"
 #include "global.h"
 #include "mqtt_functions.h"
 #include "static_config.h"
@@ -140,6 +141,12 @@ void cmd_mqttState(const char* cmd, uint32_t cmd_len) {
         Serial.println("MQTT client is not connected");
 }
 
+void cmd_readMoisture(const char* cmd, uint32_t cmd_len) {
+    uint16_t raw = soil_sensor_get_moisture_raw();
+    uint8_t perc = soil_sensor_get_moisture_percentage();
+    Serial.printf("Moisture sensor reading: %u%, raw value: %lu\n", perc, raw);
+}
+
 Stint::Command commands[] = {
     {.name = "help", .function = cmd_help, .helptext = "Lists all commands and their helptext"},
     {.name = "list", .function = cmd_list, .helptext = "Lists all config variable names"},
@@ -150,6 +157,9 @@ Stint::Command commands[] = {
     {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"},
     {.name = "wifi_setup", .function = cmd_wifiSetup, .helptext = "Re-runs the WiFi setup process"},
     {.name = "mqtt_setup", .function = cmd_mqttSetup, .helptext = "Re-runs the MQTT setup process"},
-    {.name = "mqtt_state", .function = cmd_mqttState, .helptext = "Returns the connection state of the MQTT client"}};
+    {.name = "mqtt_state", .function = cmd_mqttState, .helptext = "Returns the connection state of the MQTT client"},
+    {.name = "read_moisture_sensor",
+     .function = cmd_readMoisture,
+     .helptext = "Provides a reading of the moisture sensor as a percentage and the corresponding raw value"}};
 
 Stint stint{commands, sizeof(commands) / sizeof(commands[0]), input_buffer, SERIAL_CMD_INPUT_BUFFER_SIZE};

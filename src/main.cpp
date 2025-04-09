@@ -202,7 +202,7 @@ void handle_mqtt() {
 
         // Get soil reading
         snprintf(topic, sizeof(topic), "%s/%s/moisture", MQTT_BASE_TOPIC, config.mqtt.device_topic);
-        snprintf(val_str, sizeof(val_str), "%i", get_moisture_percentage());
+        snprintf(val_str, sizeof(val_str), "%i", soil_sensor_get_moisture_percentage());
         mqttClient.publish(topic, val_str);
 
         // Also publish the currently configured pump run duration
