@@ -1,2 +1,7 @@
 .pio
 .vscode
+circuit_diagram/~circuit_diagram.kicad_sch.lck
+
+circuit_diagram/circuit_diagram-backups/
+
+circuit_diagram/#auto_saved_files#
