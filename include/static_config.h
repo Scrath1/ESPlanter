@@ -62,7 +62,7 @@
 #define MQTT_DEFAULT_UPDATE_INTERVAL_MS (15000)
 // Defines how many seconds after a failed connection attempt to the MQTT server
 // the next attempt is made
-#define MQTT_CONNECTION_RETRY_INTERVAL_S (15)
+#define MQTT_CONNECTION_RETRY_INTERVAL_S (60)
 
 // Other
 // ============================================

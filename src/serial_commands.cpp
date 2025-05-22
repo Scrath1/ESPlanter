@@ -123,7 +123,17 @@ void cmd_reset(const char* cmd, uint32_t cmd_len) {
 void cmd_wifiSetup(const char* cmd, uint32_t cmd_len) {
     (void)cmd;
     (void)cmd_len;
-    wifi_setup();
+    extern bool wifi_setup_success;
+    wifi_setup_success = wifi_setup();
+}
+
+void cmd_wifiState(const char* cmd, uint32_t cmd_len){
+    (void)cmd;
+    (void)cmd_len;
+    if(WiFi.isConnected())
+        Serial.println("WiFi is connected");
+    else
+        Serial.println("WiFi is not connected");
 }
 
 void cmd_mqttSetup(const char* cmd, uint32_t cmd_len) {
@@ -156,6 +166,7 @@ Stint::Command commands[] = {
     {.name = "get", .function = cmd_get, .helptext = "Prints the value of a config variable"},
     {.name = "reset", .function = cmd_reset, .helptext = "Restarts the microcontroller"},
     {.name = "wifi_setup", .function = cmd_wifiSetup, .helptext = "Re-runs the WiFi setup process"},
+    {.name = "wifi_state", .function = cmd_wifiState, .helptext = "Returns the connection state of the WiFi client"},
     {.name = "mqtt_setup", .function = cmd_mqttSetup, .helptext = "Re-runs the MQTT setup process"},
     {.name = "mqtt_state", .function = cmd_mqttState, .helptext = "Returns the connection state of the MQTT client"},
     {.name = "read_moisture_sensor",

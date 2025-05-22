@@ -17,7 +17,9 @@ uint32_t wifi_scan();
 /**
  * @brief Scans for wifi networks and tries to connect to whatever network
  * is configured in the settings
+ * @return true on successfully establishing a wifi connection
+ * @return false on no connection
  */
-void wifi_setup();
+bool wifi_setup();
 
 #endif  // WIFI_FUNCTIONS_H

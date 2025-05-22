@@ -12,6 +12,8 @@
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
+bool wifi_setup_success = false;
+
 CfgRet_t config_littleFSSaveToFile(const ConfigTable_t* cfg, const char* filename) {
     if(cfg == NULL || filename == NULL) return CFG_RC_ERROR_NULLPTR;
     fs::File file = LittleFS.open(filename, FILE_WRITE);
@@ -137,7 +139,7 @@ void setup() {
 
     if(strlen(config.wifi.ssid) > 0) {
         Serial.println("Setting up WiFi");
-        wifi_setup();
+        wifi_setup_success = wifi_setup();
     } else {
         Serial.println("No SSID configured. Skipping WiFi setup");
     }
@@ -186,7 +188,13 @@ void handle_serial_input() {
 
 void handle_mqtt() {
     static uint32_t next_sensor_poll_ticktime = 0;
+
+    // check that WiFi is connected before trying MQTT stuff
+    if(!WiFi.isConnected()) return;
+
     mqtt_maintain_connection();
+    // same for the MQTT client
+    if(!mqttClient.connected()) return;
 
     if(next_sensor_poll_ticktime <= xTaskGetTickCount()) {
         // set next time when the sensors should be polled again
@@ -219,5 +227,8 @@ void handle_mqtt() {
 void loop() {
     // put your main code here, to run repeatedly:
     handle_serial_input();
-    handle_mqtt();
+
+    if(wifi_setup_success){
+        handle_mqtt();
+    }
 }

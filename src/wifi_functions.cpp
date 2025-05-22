@@ -43,7 +43,7 @@ uint32_t wifi_scan() {
     return n;
 }
 
-void wifi_setup() {
+bool wifi_setup() {
     wifi_scan();
 
     WiFi.mode(WIFI_STA);
@@ -66,6 +66,7 @@ void wifi_setup() {
         // if(!WiFi.softAP(WIFI_AP_NAME)) {
         //     Serial.println("Failed to setup softAP");
         // }
+        return false;
     } else {
         // successfull connection
         Serial.printf(
@@ -73,5 +74,6 @@ void wifi_setup() {
             "DNS Server: %s\n",
             WiFi.localIP().toString().c_str(), WiFi.dnsIP().toString().c_str());
         WiFi.setAutoReconnect(true);
+        return true;
     }
 }
